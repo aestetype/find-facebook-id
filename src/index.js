@@ -1,28 +1,12 @@
 const request = require('request');
 
-module.exports = function findFacebookId(name, token) {
+module.exports = function findFacebookId(name) {
   return new Promise((resolve, reject) => {
-    let type = 'user';
-    if (token) {
-      type = 'group';
-    }
     if (!name) {
-      reject('Invalid url');
+      reject(new Error('Invalid url'));
       return;
     }
-    let url;
-    switch (type) {
-      case 'user':
-      case 'page':
-        url = `https://www.facebook.com/${name}`;
-        break;
-      case 'group':
-        url = `https://graph.facebook.com/v2.8/search?q=${name}&type=group&access_token=${token}`;
-        break;
-      default:
-        reject('Invalid type');
-        return;
-    }
+    const url = `https://www.facebook.com/${name}`;
     request({
       method: 'GET',
       uri: url,
@@ -33,41 +17,18 @@ module.exports = function findFacebookId(name, token) {
       if (err) {
         reject(err);
       } else if (res.statusCode === 200) {
-        if (type === 'group') {
-          try {
-            body = JSON.parse(body); // eslint-disable-line
-          } catch (parseError) {
-            reject('Error when parsing json response');
-            return;
-          }
-          if (body.data.length > 0) {
-            resolve(body.data[0].id);
-            return;
-          }
-        } else {
-          const arrMatches = body.match(/entity_id":"\d*/i);
-          if (arrMatches && arrMatches.length > 0) {
-            const id = arrMatches[0].split('"').pop();
-            resolve(id);
-            return;
-          }
+        const arrMatches = body.match(/entity_id":"\d*/i);
+        if (arrMatches && arrMatches.length > 0) {
+          const id = arrMatches[0].split('"').pop();
+          resolve(id);
+          return;
         }
-        reject(`Id not found for ${name}`);
+        reject(new Error(`id not found for ${name}`));
       } else {
-        const error = new Error(`${res.statusCode}: id not found for ${name}`);
+        const error = new Error(`id not found for ${name} (code ${res.statusCode})`);
         error.statusCode = res.statusCode;
         error.body = body;
-        if (type === 'group') {
-          try {
-            body = JSON.parse(body); // eslint-disable-line
-          } catch (parseError) {
-            reject('Error when parsing json response');
-            return;
-          }
-          reject(body.error.message);
-        } else {
-          reject(error);
-        }
+        reject(error);
       }
     });
   });

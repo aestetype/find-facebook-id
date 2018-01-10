@@ -11,13 +11,9 @@ test('should resolve facebook page', () =>
   }));
 
 test('should resolve facebook group', () =>
-  findFacebookId('groupsatopenuniversity', 'token')
-    .then(() => {
-      throw new Error();
-    })
-    .catch((err) => {
-      expect(err).toBe('Invalid OAuth access token.');
-    }));
+  findFacebookId('theopenuniversity').then((id) => {
+    expect(id).toBe('7084005675');
+  }));
 
 test('should pass error', () =>
   findFacebookId('404notexistonfacebook')
@@ -25,6 +21,6 @@ test('should pass error', () =>
       throw new Error();
     })
     .catch((err) => {
-      expect(err.message).toBe('404: id not found for 404notexistonfacebook');
+      expect(err.message).toBe('id not found for 404notexistonfacebook (code 404)');
       expect(err.statusCode).toBe(404);
     }));
