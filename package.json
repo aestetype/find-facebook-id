@@ -1,12 +1,12 @@
 {
-  "name": "find-facebook-id",
-  "version": "0.2.0",
+  "name": "@aestetype/find-facebook-id",
+  "version": "0.3.0",
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint src",
     "test": "jest"
   },
-  "repository": "https://github.com/pradel/find-facebook-id.git",
+  "repository": "https://github.com/aestetype/find-facebook-id.git",
   "author": "Pradel Léo <pradel.leo@gmail.com>",
   "license": "MIT",
   "bin": {
